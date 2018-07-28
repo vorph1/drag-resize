@@ -93,6 +93,10 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       height: {
         type: Number,
         notify: true
+      },
+      scale: {
+        type: Number,
+        value: 1
       }
     };
   }
@@ -319,8 +323,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
     e.stopPropagation();
 
     // Fix for half-pixel ddx/y when touching.
-    const dx = Math.round(track.ddx || 0);
-    const dy = Math.round(track.ddy || 0);
+    const dx = Math.roundMath.round((track.ddx || 0)/this.scale);
+    const dy = Math.roundMath.round((track.ddy || 0)/this.scale);
 
     // if (track.state == 'start') {
       // console.log('resizing', e.target.id, this.box);
@@ -380,8 +384,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
   _onDrag(e, track) {
     if (!this.draggable) return;
 
-    const dx = track.dx || 0;
-    const dy = track.dy || 0;
+    const dx = Math.round((track.dx || 0)/this.scale);
+    const dy = Math.round((track.dy || 0)/this.scale);
 
     // Remember top-left point between runs.
     if (this.top === undefined) this.top = this.box.offsetTop || 0;
