@@ -17,11 +17,7 @@
   `--drag-resize-bottom-left-cursor` | bottom-left cursor | sw-resize;
   `--drag-resize-bottom-right-cursor` | bottom-right cursor | se-resize;
 */
-/*
-  FIXME(polymer-modulizer): the above comments were extracted
-  from HTML and may be out of place here. Review them and
-  then delete this comment!
-*/
+
 import { PolymerElement,html } from '../@polymer/polymer/polymer-element.js';
 
 import { GestureEventListeners } from '../@polymer/polymer/lib/mixins/gesture-event-listeners.js';
@@ -81,6 +77,27 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         readOnly: true,
         reflectToAttribute: true
       },
+      
+      left: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      top: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      width: {
+        type: Number,
+        value: 0,
+        notify: true
+      },
+      height: {
+        type: Number,
+        value: 0,
+        notify: true
+      }
     };
   }
 
@@ -99,6 +116,16 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         --drag-resize-top-right-cursor: ne-resize;
         --drag-resize-bottom-left-cursor: sw-resize;
         --drag-resize-bottom-right-cursor: se-resize;
+        --drag-resize-corner-background: white;
+        --drag-resize-edge-border: 1px dashed #333;
+        --drag-resize-corner-border: 1px solid #333;
+
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
 
       :host([resize~=top]) #container {
@@ -144,8 +171,10 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       }
 
       .corner {
-        width: calc(var(--drag-resize-handle-size) * 2);
-        height: calc(var(--drag-resize-handle-size) * 2);
+        width: calc(var(--drag-resize-handle-size));
+        height: calc(var(--drag-resize-handle-size));
+        background: var(--drag-resize-corner-background);
+        border: var(--drag-resize-corner-border);
       }
 
       .top.edge {
@@ -169,56 +198,43 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         cursor: var(--drag-resize-right-cursor);
       }
 
-
       .top.corner {
         top: calc(var(--drag-resize-handle-size) / -2);
-        border-top: var(--drag-resize-corner-border);
       }
       .bottom.corner {
         bottom: calc(var(--drag-resize-handle-size) / -2);
-        border-bottom: var(--drag-resize-corner-border);
       }
       .left.corner {
         left: calc(var(--drag-resize-handle-size) / -2);
-        border-left: var(--drag-resize-corner-border);
       }
       .right.corner {
         right: calc(var(--drag-resize-handle-size) / -2);
-        border-right: var(--drag-resize-corner-border);
       }
 
       .top.left {
         cursor: var(--drag-resize-top-left-cursor);
-        background-image: linear-gradient(to top left, rgba(0,0,0,0) 75%,
-          var(--drag-resize-corner-color, rgba(0,0,0,0)));
       }
       .top.right {
         cursor: var(--drag-resize-top-right-cursor);
-        background-image: linear-gradient(to top right, rgba(0,0,0,0) 75%,
-          var(--drag-resize-corner-color, rgba(0,0,0,0)));
       }
       .bottom.left {
         cursor: var(--drag-resize-bottom-left-cursor);
-        background-image: linear-gradient(to bottom left, rgba(0,0,0,0) 75%,
-          var(--drag-resize-corner-color, rgba(0,0,0,0)));
       }
       .bottom.right {
         cursor: var(--drag-resize-bottom-right-cursor);
-        background-image: linear-gradient(to bottom right, rgba(0,0,0,0) 75%,
-          var(--drag-resize-corner-color, rgba(0,0,0,0)));
       }
     </style>
     <div id="container">
       <slot></slot>
-      <div id="overlay" draggable="" on-track="_onDrag">
-        <div draggable="" class="top edge" hidden$="[[!resizeTop]]" on-track="_onResize"></div>
-        <div draggable="" class="right edge" hidden$="[[!resizeRight]]" on-track="_onResize"></div>
-        <div draggable="" class="bottom edge" hidden$="[[!resizeBottom]]" on-track="_onResize"></div>
-        <div draggable="" class="left edge" hidden$="[[!resizeLeft]]" on-track="_onResize"></div>
-        <div draggable="" class="top left corner" hidden$="[[!resizeTopLeft]]" on-track="_onResize"></div>
-        <div draggable="" class="top right corner" hidden$="[[!resizeTopRight]]" on-track="_onResize"></div>
-        <div draggable="" class="bottom left corner" hidden$="[[!resizeBottomLeft]]" on-track="_onResize"></div>
-        <div draggable="" class="bottom right corner" hidden$="[[!resizeBottomRight]]" on-track="_onResize"></div>
+      <div id="overlay" draggable on-track="_onDrag">
+        <div draggable class="top edge" hidden$="[[!resizeTop]]" on-track="_onResize"></div>
+        <div draggable class="right edge" hidden$="[[!resizeRight]]" on-track="_onResize"></div>
+        <div draggable class="bottom edge" hidden$="[[!resizeBottom]]" on-track="_onResize"></div>
+        <div draggable class="left edge" hidden$="[[!resizeLeft]]" on-track="_onResize"></div>
+        <div draggable class="top left corner" hidden$="[[!resizeTopLeft]]" on-track="_onResize"></div>
+        <div draggable class="top right corner" hidden$="[[!resizeTopRight]]" on-track="_onResize"></div>
+        <div draggable class="bottom left corner" hidden$="[[!resizeBottomLeft]]" on-track="_onResize"></div>
+        <div draggable class="bottom right corner" hidden$="[[!resizeBottomRight]]" on-track="_onResize"></div>
       </div>
     </div>
     `;
@@ -235,6 +251,10 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         this.initialLeft = this.box.offsetLeft;
         this.initialHeight = this.box.offsetHeight;
         this.initialWidth = this.box.offsetWidth;
+        this.top = this.initialTop;
+        this.left = this.initialLeft;
+        this.height = this.initialHeight;
+        this.width = this.initialWidth;
       });
   }
 
@@ -245,8 +265,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
 
   reset() {
     if (!this.box) return;
-    this.box.offsetParent.style.transform =
-      `translate(${this.initialLeft}px, ${this.initialTop}px)`;
+    this.box.offsetParent.style.top = `${this.initialTop}px`;
+    this.box.offsetParent.style.left = `${this.initialLeft}px`;
     this.box.style.height = this.initialHeight + 'px';
     this.box.style.width = this.initialWidth + 'px';
     this.top = this.initialTop;
@@ -329,7 +349,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       changed = true;
     }
 
-    this.box.offsetParent.style.transform = `translate(${left}px, ${top}px)`;
+    this.box.offsetParent.style.top = `${top}px`;
+    this.box.offsetParent.style.left = `${left}px`;
     this.box.style.height = height + 'px';
     this.box.style.width = width + 'px';
 
@@ -345,6 +366,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       this.fire('resize', track);
       this.top = top;
       this.left = left;
+      this.width = width;
+      this.height = height;
     }
 
     if (track.state == 'end') {
@@ -384,7 +407,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       changed = true;
     }
 
-    this.box.offsetParent.style.transform = `translate(${left}px, ${top}px)`;
+    this.box.offsetParent.style.top = `${top}px`;
+    this.box.offsetParent.style.left = `${left}px`;
 
     // console.log(top, left, dx, dy)
     if (changed) {
