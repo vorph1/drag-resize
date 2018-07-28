@@ -6,10 +6,10 @@
 
     <title>drag-resize test</title>
 
-    <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
-    <script src="../../web-component-tester/browser.js"></script>
+    <script src="../../@webcomponents/webcomponentsjs/webcomponents-bundle.js"></script>
+    <script src="../../wct-browser-legacy/browser.js"></script>
 
-    <link rel="import" href="../drag-resize.html">
+    <script type="module" src="../drag-resize.js"></script>
   </head>
   <body>
 
@@ -25,28 +25,29 @@
       </template>
     </test-fixture>
 
-    <script>
-      suite('drag-resize', function() {
+    <script type="module">
+import '../drag-resize.js';
+suite('drag-resize', function() {
 
-        test('instantiating the element with default properties works', function() {
-          var element = fixture('BasicTestFixture');
-          assert.equal(element.prop1, 'drag-resize');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello drag-resize!');
-        });
+  test('instantiating the element with default properties works', function() {
+    var element = fixture('BasicTestFixture');
+    assert.equal(element.prop1, 'drag-resize');
+    var elementShadowRoot = element.shadowRoot;
+    var elementHeader = elementShadowRoot.querySelector('h2');
+    assert.equal(elementHeader.innerHTML, 'Hello drag-resize!');
+  });
 
-        test('setting a property on the element works', function() {
-          // Create a test fixture
-          var element = fixture('ChangedPropertyTestFixture');
-          assert.equal(element.prop1, 'new-prop1');
-          var elementShadowRoot = element.shadowRoot;
-          var elementHeader = elementShadowRoot.querySelector('h2');
-          assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
-        });
+  test('setting a property on the element works', function() {
+    // Create a test fixture
+    var element = fixture('ChangedPropertyTestFixture');
+    assert.equal(element.prop1, 'new-prop1');
+    var elementShadowRoot = element.shadowRoot;
+    var elementHeader = elementShadowRoot.querySelector('h2');
+    assert.equal(elementHeader.innerHTML, 'Hello new-prop1!');
+  });
 
-      });
-    </script>
+});
+</script>
 
   </body>
 </html>

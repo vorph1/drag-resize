@@ -1,0 +1,31 @@
+{
+  "description": "A touch friendly draggable and/or resizable container, packaged for Polymer 3.",
+  "keywords": [
+    "drag",
+    "resize",
+    "sensor",
+    "touch"
+  ],
+  "name": "drag-resize",
+  "version": "1.1.0",
+  "resolutions": {
+    "inherits": "2.0.3",
+    "samsam": "1.1.3",
+    "supports-color": "3.1.2",
+    "type-detect": "1.0.0"
+  },
+  "main": "drag-resize.js",
+  "author": "Jacob Phillips (https://github.com/jifalops) <jifalops@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@polymer/polymer": "^3.0.0",
+    "@polymer/iron-flex-layout": "^3.0.0-pre.18",
+    "@webcomponents/shadycss": "^1.0.0"
+  },
+  "devDependencies": {
+    "@polymer/iron-demo-helpers": "^3.0.0-pre.18",
+    "@polymer/iron-component-page": "^3.0.0-pre.18",
+    "wct-browser-legacy": "^1.0.1",
+    "@webcomponents/webcomponentsjs": "^2.0.0"
+  }
+}
