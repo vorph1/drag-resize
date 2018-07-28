@@ -80,22 +80,18 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       
       left: {
         type: Number,
-        value: 0,
         notify: true
       },
       top: {
         type: Number,
-        value: 0,
         notify: true
       },
       width: {
         type: Number,
-        value: 0,
         notify: true
       },
       height: {
         type: Number,
-        value: 0,
         notify: true
       }
     };
@@ -126,30 +122,30 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+
+        position: relative;
+        box-sizing: border-box;
+        display: block;
+        @apply --drag-resize-container;
       }
 
-      :host([resize~=top]) #container {
+      :host([resize~=top]) {
         padding-top: var(--drag-resize-edge-padding);
       }
-      :host([resize~=bottom]) #container {
+      :host([resize~=bottom]) {
         padding-bottom: var(--drag-resize-edge-padding);
       }
-      :host([resize~=left]) #container {
+      :host([resize~=left]) {
         padding-left: var(--drag-resize-edge-padding);
       }
-      :host([resize~=right]) #container {
+      :host([resize~=right]) {
         padding-right: var(--drag-resize-edge-padding);
       }
 
       :host([draggable]) #overlay {
         cursor: var(--drag-resize-move-cursor);
       }
-      #container {
-        position: relative;
-        box-sizing: border-box;
-        @apply --drag-resize-container;
-      }
-      #container div {
+      :host div {
         position: absolute;
       }
       #overlay {
@@ -224,20 +220,39 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         cursor: var(--drag-resize-bottom-right-cursor);
       }
     </style>
-    <div id="container">
-      <slot></slot>
-      <div id="overlay" draggable on-track="_onDrag">
-        <div draggable class="top edge" hidden$="[[!resizeTop]]" on-track="_onResize"></div>
-        <div draggable class="right edge" hidden$="[[!resizeRight]]" on-track="_onResize"></div>
-        <div draggable class="bottom edge" hidden$="[[!resizeBottom]]" on-track="_onResize"></div>
-        <div draggable class="left edge" hidden$="[[!resizeLeft]]" on-track="_onResize"></div>
-        <div draggable class="top left corner" hidden$="[[!resizeTopLeft]]" on-track="_onResize"></div>
-        <div draggable class="top right corner" hidden$="[[!resizeTopRight]]" on-track="_onResize"></div>
-        <div draggable class="bottom left corner" hidden$="[[!resizeBottomLeft]]" on-track="_onResize"></div>
-        <div draggable class="bottom right corner" hidden$="[[!resizeBottomRight]]" on-track="_onResize"></div>
-      </div>
+    <slot></slot>
+    <div id="overlay" draggable on-track="_onDrag">
+      <div draggable class="top edge" hidden$="[[!resizeTop]]" on-track="_onResize"></div>
+      <div draggable class="right edge" hidden$="[[!resizeRight]]" on-track="_onResize"></div>
+      <div draggable class="bottom edge" hidden$="[[!resizeBottom]]" on-track="_onResize"></div>
+      <div draggable class="left edge" hidden$="[[!resizeLeft]]" on-track="_onResize"></div>
+      <div draggable class="top left corner" hidden$="[[!resizeTopLeft]]" on-track="_onResize"></div>
+      <div draggable class="top right corner" hidden$="[[!resizeTopRight]]" on-track="_onResize"></div>
+      <div draggable class="bottom left corner" hidden$="[[!resizeBottomLeft]]" on-track="_onResize"></div>
+      <div draggable class="bottom right corner" hidden$="[[!resizeBottomRight]]" on-track="_onResize"></div>
     </div>
     `;
+  }
+
+  static get observers() {
+    return [
+      'updateSize(width,height)',
+      'updatePosition(top,left)'
+    ];
+  }
+
+  updateSize(width,height) {
+    if (this.box) {
+      this.box.style.height = height + 'px';
+      this.box.style.width = width + 'px';
+    }
+  }
+
+  updatePosition(top,left) {
+    if (typeof top != "undefined" && typeof left != "undefined") {
+      this.style.top = `${top}px`;
+      this.style.left = `${left}px`;
+    }
   }
 
   connectedCallback() {
@@ -247,8 +262,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       info => {
         this.box = slot.assignedNodes({flatten:true})
           .filter(n => n.nodeType === Node.ELEMENT_NODE)[0];
-        this.initialTop = this.box.offsetTop;
-        this.initialLeft = this.box.offsetLeft;
+        this.initialTop = this.offsetTop;
+        this.initialLeft = this.offsetLeft;
         this.initialHeight = this.box.offsetHeight;
         this.initialWidth = this.box.offsetWidth;
         this.top = this.initialTop;
@@ -265,8 +280,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
 
   reset() {
     if (!this.box) return;
-    this.box.offsetParent.style.top = `${this.initialTop}px`;
-    this.box.offsetParent.style.left = `${this.initialLeft}px`;
+    this.style.top = `${this.initialTop}px`;
+    this.style.left = `${this.initialLeft}px`;
     this.box.style.height = this.initialHeight + 'px';
     this.box.style.width = this.initialWidth + 'px';
     this.top = this.initialTop;
@@ -349,19 +364,6 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       changed = true;
     }
 
-    this.box.offsetParent.style.top = `${top}px`;
-    this.box.offsetParent.style.left = `${left}px`;
-    this.box.style.height = height + 'px';
-    this.box.style.width = width + 'px';
-
-    // if (track.state == 'end') {
-    //   console.log(e.target.id, 'moved', track, {
-    //     transform: this.box.offsetParent.style.transform,
-    //     height: this.box.style.height,
-    //     width: this.box.style.width,
-    //   });
-    // }
-
     if (changed) {
       this.fire('resize', track);
       this.top = top;
@@ -391,8 +393,6 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       this._dragStartLeft = this.left;
     }
 
-
-
     // Values to change
     let top = this._dragStartTop;
     let left = this._dragStartLeft;
@@ -407,9 +407,6 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       changed = true;
     }
 
-    this.box.offsetParent.style.top = `${top}px`;
-    this.box.offsetParent.style.left = `${left}px`;
-
     // console.log(top, left, dx, dy)
     if (changed) {
       this.fire('drag', track);
@@ -419,15 +416,15 @@ class DragResize extends GestureEventListeners(PolymerElement) {
   }
 
   _sidesToTranslate(element) {
-    let top = element.offsetParent.offsetTop;
-    let left = element.offsetParent.offsetLeft;
+    let top = this.offsetTop;
+    let left = this.offsetLeft;
     element.style.height = (element.offsetHeight + 2) + 'px';
     element.style.width = (element.offsetWidth + 2) + 'px';
     return {
-      top: element.offsetParent.offsetTop == top,
-      left: element.offsetParent.offsetLeft == left,
-      bottom: element.offsetParent.offsetTop == top - 2,
-      right: element.offsetParent.offsetLeft == left - 2,
+      top: this.offsetTop == top,
+      left: this.offsetLeft == left,
+      bottom: this.offsetTop == top - 2,
+      right: this.offsetLeft == left - 2,
     };
   }
 
