@@ -336,10 +336,10 @@ class DragResize extends GestureEventListeners(PolymerElement) {
     if (this.left === undefined) this.left = this.box.offsetLeft || 0;
 
     // Values to change
-    let top = this.top;
-    let left = this.left;
-    let height = this.box.offsetHeight;
-    let width = this.box.offsetWidth;
+    let top = Number(this.top);
+    let left = Number(this.left);
+    let height = Number(this.box.offsetHeight);
+    let width = Number(this.box.offsetWidth);
     let changed = false;
 
     // If this line is moved to the top, resizing fails.
@@ -394,8 +394,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
 
     if (track.state == 'start') {
       // console.log('dragging...');
-      this._dragStartTop = this.top;
-      this._dragStartLeft = this.left;
+      this._dragStartTop = Number(this.top);
+      this._dragStartLeft = Number(this.left);
     }
 
     // Values to change
