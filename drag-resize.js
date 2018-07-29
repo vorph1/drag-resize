@@ -247,7 +247,7 @@ class DragResize extends GestureEventListeners(PolymerElement) {
   }
 
   updateSize(width,height) {
-    if (this.box) {
+    if (this.box && typeof width != "undefined" && typeof height != "undefined") {
       this.box.style.height = height + 'px';
       this.box.style.width = width + 'px';
     }
@@ -267,14 +267,34 @@ class DragResize extends GestureEventListeners(PolymerElement) {
       info => {
         this.box = slot.assignedNodes({flatten:true})
           .filter(n => n.nodeType === Node.ELEMENT_NODE)[0];
-        this.initialTop = this.offsetTop;
-        this.initialLeft = this.offsetLeft;
-        this.initialHeight = this.box.offsetHeight;
-        this.initialWidth = this.box.offsetWidth;
+        
+        if (typeof this.top != "undefined")
+          this.initialTop = this.top;
+        else
+          this.initialTop = this.offsetTop
+
+        if (typeof this.left != "undefined")
+          this.initialLeft = this.left;
+        else
+          this.initialLeft = this.offsetLeft
+
+        if (typeof this.height != "undefined")
+          this.initialHeight = this.height;
+        else
+          this.initialHeight = this.box.offsetHeight
+          
+        if (typeof this.width != "undefined")
+          this.initialWidth = this.width;
+        else
+          this.initialWidth = this.box.offsetWidth
+
         this.top = this.initialTop;
         this.left = this.initialLeft;
+        this.updatePosition(this.top,this.left);
+
         this.height = this.initialHeight;
         this.width = this.initialWidth;
+        this.updateSize(this.width,this.height);
       });
   }
 
@@ -285,16 +305,17 @@ class DragResize extends GestureEventListeners(PolymerElement) {
 
   reset() {
     if (!this.box) return;
-    this.style.top = `${this.initialTop}px`;
-    this.style.left = `${this.initialLeft}px`;
-    this.box.style.height = this.initialHeight + 'px';
-    this.box.style.width = this.initialWidth + 'px';
+    this.height = this.initialHeight;
+    this.width = this.initialWidth;
     this.top = this.initialTop;
     this.left = this.initialLeft;
   }
 
   _resizeChanged(edges) {
-    if (typeof edges != 'string') return;
+    if (typeof edges != 'string') {
+      this._setDraggable(false);
+      return;
+    }
     this.resizeTop = edges.includes('top');
     this.resizeBottom = edges.includes('bottom');
     this.resizeLeft = edges.includes('left');
@@ -308,7 +329,10 @@ class DragResize extends GestureEventListeners(PolymerElement) {
   }
 
   _dragChanged(drag) {
-    if (typeof drag != 'string') return;
+    if (typeof drag != 'string') {
+      this._setResizable(false);
+      return;
+    }
     this.dragUp = drag.includes('up');
     this.dragDown = drag.includes('down');
     this.dragLeft = drag.includes('left');
@@ -334,12 +358,14 @@ class DragResize extends GestureEventListeners(PolymerElement) {
     // Remember top-left point between runs.
     if (this.top === undefined) this.top = this.box.offsetTop || 0;
     if (this.left === undefined) this.left = this.box.offsetLeft || 0;
+    if (this.height === undefined) this.height = this.box.offsetHeight || 0;
+    if (this.width === undefined) this.width = this.box.offsetWidth || 0;
 
     // Values to change
     let top = Number(this.top);
     let left = Number(this.left);
-    let height = Number(this.box.offsetHeight);
-    let width = Number(this.box.offsetWidth);
+    let height = Number(this.height);
+    let width = Number(this.width);
     let changed = false;
 
     // If this line is moved to the top, resizing fails.
