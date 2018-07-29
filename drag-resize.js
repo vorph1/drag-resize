@@ -148,6 +148,7 @@ class DragResize extends GestureEventListeners(PolymerElement) {
 
       :host([draggable]) #overlay {
         cursor: var(--drag-resize-move-cursor);
+        z-index: 1000;
       }
       :host div {
         position: absolute;
