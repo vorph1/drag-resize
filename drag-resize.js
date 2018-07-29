@@ -323,8 +323,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
     e.stopPropagation();
 
     // Fix for half-pixel ddx/y when touching.
-    const dx = Math.roundMath.round((track.ddx || 0)/this.scale);
-    const dy = Math.roundMath.round((track.ddy || 0)/this.scale);
+    const dx = Math.round((track.ddx || 0)/this.scale);
+    const dy = Math.round((track.ddy || 0)/this.scale);
 
     // if (track.state == 'start') {
       // console.log('resizing', e.target.id, this.box);
