@@ -265,8 +265,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
     let slot = this.shadowRoot.querySelector('slot');
     this._observer = new FlattenedNodesObserver(slot,
       info => {
-        this.box = slot.assignedNodes({flatten:true})
-          .filter(n => n.nodeType === Node.ELEMENT_NODE)[0];
+        this.box = slot.assignedElements({flatten:true})
+          .filter(n => n.hasAttribute('drag-content'))[0];
         
         if (typeof this.top != "undefined")
           this.initialTop = this.top;
