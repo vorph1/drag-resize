@@ -117,8 +117,10 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         --drag-resize-bottom-left-cursor: sw-resize;
         --drag-resize-bottom-right-cursor: se-resize;
         --drag-resize-corner-background: white;
-        --drag-resize-edge-border: 1px dashed #333;
-        --drag-resize-corner-border: 1px solid #333;
+        --drag-resize-border-color: #333;
+        --drag-resize-border-width: 2px;
+        --drag-resize-edge-border: var(--drag-resize-border-width) dashed var(--drag-resize-border-color);
+        --drag-resize-corner-border: var(--drag-resize-border-width) solid var(--drag-resize-border-color);
 
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -158,6 +160,8 @@ class DragResize extends GestureEventListeners(PolymerElement) {
         left: 0;
         bottom: 0;
         right: 0;
+        box-sizing: border-box;
+        margin: calc(-1 * var(--drag-resize-border-width));
       }
 
       .top.edge, .bottom.edge {
@@ -449,8 +453,6 @@ class DragResize extends GestureEventListeners(PolymerElement) {
   _sidesToTranslate(element) {
     let top = this.offsetTop;
     let left = this.offsetLeft;
-    element.style.height = (element.offsetHeight + 2) + 'px';
-    element.style.width = (element.offsetWidth + 2) + 'px';
     return {
       top: this.offsetTop == top,
       left: this.offsetLeft == left,
