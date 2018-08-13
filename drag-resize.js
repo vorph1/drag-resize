@@ -284,12 +284,12 @@ class DragResize extends GestureEventListeners(PolymerElement) {
 
         if (typeof this.height != "undefined")
           this.initialHeight = this.height;
-        else
+        else if(this.box)
           this.initialHeight = this.box.offsetHeight
           
         if (typeof this.width != "undefined")
           this.initialWidth = this.width;
-        else
+        else if(this.box)
           this.initialWidth = this.box.offsetWidth
 
         this.top = this.initialTop;
